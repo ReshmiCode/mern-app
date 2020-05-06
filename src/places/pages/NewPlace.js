@@ -1,32 +1,32 @@
 import React, { useCallback, useReducer } from "react";
 
-import "./NewPlace.css";
+import "./PlaceForm.css";
 
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH,
 } from "../../shared/util/validators";
 import Input from "../../shared/components/FormElements/Input";
-import Button from '../../shared/components/FormElements/Button';
+import Button from "../../shared/components/FormElements/Button";
 
 const formReducer = (state, action) => {
-  switch(action.type) {
-    case 'INPUT_CHANGE':
+  switch (action.type) {
+    case "INPUT_CHANGE":
       let formIsValid = true;
-      for(const inputId in state.inputs) {
-        if(inputId === action.inputId) {
+      for (const inputId in state.inputs) {
+        if (inputId === action.inputId) {
           formIsValid = formIsValid && action.isValid;
-        }
-        else {
+        } else {
           formIsValid = formIsValid && state.inputs[inputId].isValid;
         }
       }
-      return {...state,
+      return {
+        ...state,
         inputs: {
           ...state.inputs,
           [action.inputId]: { value: action.value, isValid: action.isValid },
         },
-        isValid: formIsValid
+        isValid: formIsValid,
       };
     default:
       return state;
@@ -37,22 +37,26 @@ const NewPlace = () => {
   const [formState, dispatch] = useReducer(formReducer, {
     inputs: {
       title: {
-        value: '',
-        isValid: false
+        value: "",
+        isValid: false,
       },
       description: {
-        value: '',
-        isValid: false
+        value: "",
+        isValid: false,
+      },
+      address: {
+        value: "",
+        isValid: false,
       },
     },
-    isValid: false
-  })
+    isValid: false,
+  });
 
   const inputHandler = useCallback((id, value, isValid) => {
-    dispatch({type: 'INPUT_CHANGE', value, isValid, inputId: id})
+    dispatch({ type: "INPUT_CHANGE", value, isValid, inputId: id });
   }, []); // useCallback -> this should rerender based on dependencies to make useEffect in Input not run again
 
-  const placeSubmitHandler = event => {
+  const placeSubmitHandler = (event) => {
     event.preventDefault();
     console.log(formState.inputs);
   };
