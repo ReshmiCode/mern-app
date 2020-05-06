@@ -52,8 +52,13 @@ const NewPlace = () => {
     dispatch({type: 'INPUT_CHANGE', value, isValid, inputId: id})
   }, []); // useCallback -> this should rerender based on dependencies to make useEffect in Input not run again
 
+  const placeSubmitHandler = event => {
+    event.preventDefault();
+    console.log(formState.inputs);
+  };
+
   return (
-    <form className="place-form">
+    <form className="place-form" onSubmit={placeSubmitHandler}>
       <Input
         element="input"
         type="input"
@@ -69,6 +74,14 @@ const NewPlace = () => {
         id="description"
         validators={[VALIDATOR_MINLENGTH(5)]}
         errorText="Please enter a valid description (at least 5 characters)."
+        onInput={inputHandler}
+      />
+      <Input
+        element="input"
+        label="Address"
+        id="address"
+        validators={[VALIDATOR_REQUIRE()]}
+        errorText="Please enter a valid address."
         onInput={inputHandler}
       />
       <Button type="submit" disabled={!formState.isValid}>
