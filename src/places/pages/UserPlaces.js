@@ -18,7 +18,7 @@ const DUMMY_PLACES = [
     creator: "u1",
   },
   {
-    id: "p1",
+    id: "p2",
     title: "Empire State Building 2",
     description: "In New York",
     imageUrl:
