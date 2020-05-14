@@ -1,5 +1,7 @@
 const express = require("express");
 
+const HttpError = require("../models/http-error");
+
 const router = express.Router();
 
 const DUMMY_PLACES = [
@@ -23,9 +25,7 @@ router.get("/:pid", (req, res, next) => {
   const placeId = req.params.pid;
   const place = DUMMY_PLACES.find((p) => p.id === placeId);
   if (!place) {
-    const error = new Error("Could not find a place for the provided id.");
-    error.code = 404;
-    throw error; // can use throw if not async code
+    throw new HttpError("Could not find a place for the provided id.", 404); // can use throw if not async code
   }
   res.json({ place });
 });
@@ -34,9 +34,9 @@ router.get("/user/:uid", (req, res, next) => {
   const userId = req.params.uid;
   const place = DUMMY_PLACES.find((p) => p.creator === userId);
   if (!place) {
-    const error = new Error("Could not find a place for the provided user id.");
-    error.code = 404;
-    return next(error); // need to use next(error) with async code
+    return next(
+      new HttpError("Could not find a place for the provided user id.", 404)
+    ); // need to use next(error) with async code
   }
   res.json({ place });
 });
