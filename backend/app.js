@@ -30,7 +30,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(CONST.MONGO_URL)
+  .connect(CONST.MONGO_URL, { useNewUrlParser: true })
   .then(() => {
     app.listen(5000);
   })
