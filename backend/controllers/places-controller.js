@@ -28,22 +28,27 @@ const getPlaceById = async (req, res, next) => {
 
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.uid;
-  let places;
+
+  //let places;
+  let userWithPlaces;
   try {
-    places = await Place.find({ creator: userId });
+    //places = await Place.find({ creator: userId });
+    userWithPlaces = await User.findById(userId).populate("places");
   } catch (err) {
     return next(
       new HttpError("Fetching places failed, please try again later.", 500)
     );
   }
 
-  if (!places || places.length === 0) {
+  if (!userWithPlaces || userWithPlaces.length === 0) {
     return next(
       new HttpError("Could not find a place for the provided user id.", 404)
     ); // need to use next(error) with async code
   }
   res.json({
-    places: places.map((place) => place.toObject({ getters: true })),
+    places: userWithPlaces.places.map((place) =>
+      place.toObject({ getters: true })
+    ),
   });
 };
 
@@ -139,22 +144,29 @@ const deletePlaceById = async (req, res, next) => {
 
   let place;
   try {
-    place = await Place.findById(placeId);
+    place = await Place.findById(placeId).populate("creator"); // can only use populate when models ref: each other
   } catch (err) {
     return next(
       new HttpError("Something went wrong, could not delete place.", 500)
     );
+  }
+
+  if (!place) {
+    return next(new HttpError("Could not find a place for the given id.", 404));
   }
 
   try {
-    await place.remove();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await place.remove({ session: sess });
+    place.creator.places.pull(place);
+    await place.creator.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     return next(
       new HttpError("Something went wrong, could not delete place.", 500)
     );
   }
-
-  // throw new HttpError("Could not find a place for the given id.", 404);
 
   res.status(200).json({ message: "Deleted place." });
 };
