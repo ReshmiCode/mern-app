@@ -1,4 +1,3 @@
-const uuid = require("uuid/v4");
 const mongoose = require("mongoose");
 const { validationResult } = require("express-validator");
 
