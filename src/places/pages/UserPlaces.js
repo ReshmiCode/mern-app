@@ -1,42 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+import { useHttpClient } from "../../shared/hooks/http-hook";
 import PlaceList from "../components/PlaceList";
-
-const DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Building",
-    description: "In New York",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/1/10/Empire_State_Building_%28aerial_view%29.jpg",
-    address: "20 W 34th St, New York, NY 10001",
-    location: {
-      lat: 40.74,
-      lng: -73.98,
-    },
-    creator: "u1",
-  },
-  {
-    id: "p2",
-    title: "Empire State Building 2",
-    description: "In New York",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/1/10/Empire_State_Building_%28aerial_view%29.jpg",
-    address: "20 W 34th St, New York, NY 10001",
-    location: {
-      lat: 40.74,
-      lng: -73.98,
-    },
-    creator: "u2",
-  },
-];
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 
 const UserPlaces = () => {
+  const [loadedPlaces, setLoadedPlaces] = useState([]);
+  const { isLoading, error, clearError, sendRequest } = useHttpClient();
   const userId = useParams().userId; // : aka dynamic part from app.js
-  const loadedPlaces = DUMMY_PLACES.filter((place) => place.creator === userId);
 
-  return <PlaceList items={loadedPlaces} />;
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      try {
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/places/user/${userId}`
+        );
+        setLoadedPlaces(responseData.places);
+      } catch (err) {}
+    };
+    fetchPlaces();
+  }, [sendRequest, userId]);
+
+  return (
+    <React.Fragment>
+      <ErrorModal error={error} onClear={clearError} />
+      {isLoading && (
+        <div className="center">
+          <LoadingSpinner />
+        </div>
+      )}
+      {!isLoading && loadedPlaces && <PlaceList items={loadedPlaces} />}
+    </React.Fragment>
+  );
 };
 
 export default UserPlaces;
