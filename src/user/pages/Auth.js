@@ -1,7 +1,5 @@
 import React, { useState, useContext } from "react";
-
 import "./Auth.css";
-
 import { useForm } from "../../shared/hooks/form-hook";
 import {
   VALIDATOR_EMAIL,
@@ -15,6 +13,7 @@ import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { AuthContext } from "../../shared/context/auth-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
@@ -119,6 +118,7 @@ const Auth = () => {
               onInput={inputHandler}
             />
           )}
+          {!isLoginMode && <ImageUpload center id="image" />}
           <Input
             element="input"
             type="email"
