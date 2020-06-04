@@ -73,7 +73,7 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image: "https://www.hackingwithswift.com/uploads/matrix.jpg",
+    image: req.file.path,
     creator,
   });
 
