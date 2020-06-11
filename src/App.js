@@ -17,21 +17,24 @@ import { AuthContext } from "./shared/context/auth-context";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [token, setToken] = useState(null);
 
-  const login = useCallback((uid) => {
+  const login = useCallback((uid, token) => {
     // useCallback so not rerendered
     setIsLoggedIn(true);
     setUserId(uid);
+    setToken(token);
   }, []);
 
   const logout = useCallback(() => {
     setIsLoggedIn(false);
     setUserId(null);
+    setToken(false);
   }, []);
 
   let routes;
 
-  if (isLoggedIn) {
+  if (token) {
     routes = (
       <Switch>
         <Route path="/" exact>
@@ -69,7 +72,13 @@ function App() {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn: isLoggedIn, userId, login: login, logout: logout }}
+      value={{
+        isLoggedIn: !!token,
+        token: token,
+        userId,
+        login: login,
+        logout: logout,
+      }}
     >
       {/* wrap context so every nested component can access it */}
       <Router>
