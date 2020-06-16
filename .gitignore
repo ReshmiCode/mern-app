@@ -24,3 +24,4 @@ yarn-error.log*
 
 /backend/node_modules
 /backend/util/config.js
+/backend/uploads
