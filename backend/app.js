@@ -7,7 +7,6 @@ const path = require("path");
 const HttpError = require("./models/http-error");
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
-const CONST = require("./util/config");
 
 const app = express();
 
@@ -49,7 +48,10 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-  .connect(CONST.MONGO_URL, { useNewUrlParser: true })
+  .connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-ijf6b.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
+    { useNewUrlParser: true }
+  )
   .then(() => {
     app.listen(5000);
   })
