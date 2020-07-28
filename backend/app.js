@@ -13,8 +13,9 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use("/uploads/images", express.static(path.join("uploads", "images")));
+app.use(express.static(path.join("public"))); // any request to any URL will be handled statically
 
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -22,15 +23,18 @@ app.use((req, res, next) => {
   );
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
   next();
-});
+});*/
 
 app.use("/api/places", placesRoutes);
-
 app.use("/api/users", usersRoutes);
 
 app.use((req, res, next) => {
-  throw new HttpError("Could not find this route.", 404);
+  res.sendFile(path.resolve(__dirname, "public", "index.html"));
 });
+
+/*app.use((req, res, next) => {
+  throw new HttpError("Could not find this route.", 404);
+});*/
 
 app.use((error, req, res, next) => {
   if (req.file) {
